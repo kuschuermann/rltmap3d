@@ -83,11 +83,11 @@
    :     final double x = (random.nextDouble() * 100.0d) - 50.0d;
    :     final double y = (random.nextDouble() * 100.0d) - 50.0d;
    :     final double z = (random.nextDouble() * 100.0d) - 50.0d;
-   :
    :     final Location3D n = new Point3D().setCartesian( x,
    :                                                      y,
    :                                                      z );
-   : map3d.store( n );
+   :     map3d.store( n );
+   :   }
 
    Next, create a reference point from which we’ll calculate
    distances:
