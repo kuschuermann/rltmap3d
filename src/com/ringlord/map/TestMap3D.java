@@ -8,6 +8,21 @@ import java.util.Random;
 import java.util.Set;
 
 
+// This file is part of Map3D.
+//
+// Map3D is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Map3D is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Map3D. If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Runs some tests on the Map3D class to test performance and ensure
  * correctness.
@@ -72,7 +87,7 @@ public class TestMap3D
     final long searchStart = System.nanoTime();
     final List<Location3D> result = map3d.getAllWithin( CENTER,
 	                                                SEARCH );
-    final long searchTime = (System.nanoTime() - searchStart);
+    final long searchTimeNanos = (System.nanoTime() - searchStart);
     System.out.println( "\tLocate " +
 	                result.size() +
 	                " from " +
@@ -83,7 +98,7 @@ public class TestMap3D
 	                CENTER +
 	                ": " +
 	                String.format( "%1.3f ms",
-	                               searchTime / 1_000_000.0d ) );
+	                               searchTimeNanos / 1_000_000.0d ) );
 
     int found = 0;
     final long iterateStart = System.nanoTime();
@@ -96,8 +111,11 @@ public class TestMap3D
     final long iterateTime = System.nanoTime() - iterateStart;
     if( (found == map3d.size()) && (found == COUNT) )
       {
-	System.out.println( "\tIterate all items: " + String.format( "%1.3f ms",
-	                                                             iterateTime / 1_000_000.0d ) );
+	final double iterateTimeNanos = iterateTime;
+	System.out.println( "\tIterate all items: " +
+	                    String.format( "%1.3f ms = %1.2f times faster than linear search.",
+	                                   iterateTimeNanos / 1_000_000.0d,
+	                                   iterateTimeNanos / searchTimeNanos ) );
       }
     else
       {

@@ -5,6 +5,21 @@ import java.util.EventObject;
 import javax.swing.event.ChangeListener;
 
 
+// This file is part of Map3D.
+//
+// Map3D is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Map3D is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Map3D. If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * A coordinate in 3D space, of particular interest for {@link Map3D}. A default
  * implementation of this class is provided in {@link Point3D}.
