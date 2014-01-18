@@ -322,8 +322,8 @@ public class Map3D<T extends Location3D>
    *         within that sphere.
    * @see #getAllWithin(double, double, double, double)
    */
-  public synchronized Location3D nearestTo( final Location3D referenceLocation3D,
-	                                    final double range )
+  public synchronized T nearestTo( final Location3D referenceLocation3D,
+	                           final double range )
   {
     return nearestTo( referenceLocation3D.getX(),
 	              referenceLocation3D.getY(),
@@ -352,18 +352,18 @@ public class Map3D<T extends Location3D>
    *         within that sphere.
    * @see #getAllWithin(Location3D, double)
    */
-  public synchronized Location3D nearestTo( final double fromX,
-	                                    final double fromY,
-	                                    final double fromZ,
-	                                    final double range )
+  public synchronized T nearestTo( final double fromX,
+	                           final double fromY,
+	                           final double fromZ,
+	                           final double range )
   {
-    Location3D nearestItem = null;
+    T nearestItem = null;
     double distance = Double.MAX_VALUE;
 
-    for( final Location3D item : getAllWithin( fromX,
-	                                       fromY,
-	                                       fromZ,
-	                                       range ) )
+    for( final T item : getAllWithin( fromX,
+	                              fromY,
+	                              fromZ,
+	                              range ) )
       {
 	final double d = item.distanceTo( fromX,
 	                                  fromY,
