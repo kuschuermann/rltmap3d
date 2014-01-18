@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	************************************************************
+	Ant 1.6 (or later) Project Build File for: Map3D
+	Constructed with AntBuilder 1.23 (13-Jul-2013)
+	See http://ringlord.com/products/antbuilder/
+	************************************************************ -->
+<project name="Map3D" default="compile" basedir=".">
+	<property name="build-dir" value=".build"/>
+	<property name="src-dir"   value="src"/>
+	<property name="jdoc-path" value="jdoc"/>
+	<property name="archive"   value="rltmap3d.jar"/>
+	<property name="tar-file"  value="rltmap3d.tar"/>
+	<property name="source"    value="1.7"/>
+
+	<target name="all" depends="clean,jar,docs" description="Cleans project and then builds the rltmap3d.jar and the JavaDocs"/>
+
+	<target name="clean" description="Removes files that are rebuilt during compilation">
+		<delete dir="${build-dir}" verbose="false" quiet="true"/>
+		<delete file=".manifest" verbose="false" quiet="true"/>
+	</target>
+
+	<target name="cleanall" depends="clean" description="Cleans GNU/Emacs backup files, too">
+		<delete dir="${jdoc-path}" verbose="false" quiet="true"/>
+		<delete><!-- cleanup gnuemacs backup files -->
+			<fileset dir="." defaultexcludes="false">
+				<include name="*~"/>
+			</fileset>
+			<fileset dir="${src-dir}" defaultexcludes="false">
+				<include name="*~"/>
+				<include name="**/*~"/>
+			</fileset>
+		</delete>
+		<delete file="${archive}" verbose="false" quiet="true"/>
+		<delete file="${tar-file}" verbose="false" quiet="true"/>
+		<delete file="${archive}.md5" verbose="false" quiet="true"/>
+		<delete file="${archive}.sha1" verbose="false" quiet="true"/>
+		<delete file="${archive}.sha256" verbose="false" quiet="true"/>
+	</target>
+
+	<target name="compile" description="Compiles the project into .build/">
+		<property name="target" value="1.7"/>
+		<echo message="Compiling Java ${source} sources for ${target} JVM"/>
+		<mkdir  dir="${build-dir}"/>
+		<javac  srcdir="${src-dir}"
+			destdir="${build-dir}"
+			source="${source}"
+			target="${target}"
+			deprecation="true"
+			includeantruntime="false"
+			debug="true">
+			<compilerarg value="-Xlint:all,-serial"/>
+		</javac>
+	</target>
+
+	<target name="jar" depends="clean,compile" description="Constructs the rltmap3d.jar file">
+		<tstamp>
+			<format property="TODAY" pattern="yyyy-MMM-dd HH:mm:ss Z"/>
+		</tstamp>
+		<manifest file=".manifest" mode="update">
+			<attribute name="Main-Class" value=""/>
+			<attribute name="Implementation-Title" value="Map3D"/>
+			<attribute name="Implementation-Version" value="1.0 (${TODAY})"/>
+		</manifest>
+		<jar    jarfile="${archive}"
+			manifest=".manifest"
+			whenempty="fail"
+			index="false"><!-- index='false' allows external JARs to be found -->
+			<fileset dir="${build-dir}" includes="**/*.class"/>
+			<fileset dir="." includes="*.fxml"/>
+			<fileset dir="." includes="LICENSE.TXT"/>
+			<fileset dir="." includes="README.text"/>
+		</jar>
+		<chmod perm="+x" type="file" file="${archive}"/>
+	</target>
+
+	<target name="dist" depends="clean,jar" description="Builds a distribution in rltmap3d.tar.gz">
+		<tar    tarfile="${tar-file}.gz"
+			longfile="gnu"
+			compression="gzip">
+			<tarfileset	dir="."
+					prefix="rltmap3d"
+					mode="750"
+					dirmode="750"
+					username="${user.name}"
+					group="rltmap3d">
+				<include name="${archive}"/>
+				<include name="rltmap3d"/>
+				<include name="rltmap3d.bat"/>
+			</tarfileset>
+			<tarfileset	dir="."
+					prefix="rltmap3d"
+					mode="640"
+					dirmode="750"
+					username="${user.name}"
+					group="rltmap3d">
+				<include name="README.text"/>
+				<include name="*.od?"/>
+				<include name="*.pdf"/>
+			</tarfileset>
+		</tar>
+	</target>
+
+	<target name="docs" description="Builds the JavaDoc in jdoc/">
+		<delete dir="${jdoc-path}" verbose="false" quiet="true"/>
+		<mkdir  dir="${jdoc-path}"/>
+		<javadoc        sourcepath="${src-dir}"
+				destdir="${jdoc-path}"
+				protected="true"
+				author="true"
+				version="true"
+				use="true"
+				charset="UTF-8"
+				splitindex="false"
+				breakiterator="true"
+				doctitle="Documentation for 'Map3D'"
+				overview="package.html"
+				windowtitle="Map3D">
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+			<fileset dir="${src-dir}">
+				<include name="*.java"/>
+				<include name="**/*.java"/>
+			</fileset>
+		</javadoc>
+	</target>
+
+	<target name="jar7" description="Builds the rltmap3d.jar for Java 1.7">
+		<property name="target" value="1.7"/>
+		<antcall target="jar"/>
+	</target>
+
+	<target name="jar8" description="Builds the rltmap3d.jar for Java 1.8">
+		<property name="target" value="1.8"/>
+		<antcall target="jar"/>
+	</target>
+
+</project>
