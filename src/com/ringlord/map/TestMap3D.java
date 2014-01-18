@@ -39,7 +39,7 @@ public class TestMap3D
 	  }
       }
     System.out.println( "Total tests run:  " + testCount );
-    System.out.println( "Total tests :   " + (testCount - failures) );
+    System.out.println( "Total tests OK:   " + (testCount - failures) );
     System.out.println( "Total tests FAIL: " + failures );
   }
 
@@ -51,7 +51,7 @@ public class TestMap3D
     final double SEARCH = 5.0d;
 
     final Set<Location3D> stored = new HashSet<>();
-    final Map3D map3d = new Map3D( 1.5d );
+    final Map3D<Location3D> map3d = new Map3D<>( 1.5d );
     for( int i = 0; i < COUNT; i++ )
       {
 	final double x = (random.nextDouble() * 100.0d) - 50.0d;

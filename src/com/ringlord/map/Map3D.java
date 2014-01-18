@@ -55,10 +55,10 @@ import com.ringlord.map.Location3D.MovementListener;
  * 
  * @author K Udo Schuermann
  */
-public class Map3D
+public class Map3D<T extends Location3D>
   implements
-    MovementListener,
-    Iterable<Location3D>
+    MovementListener<T>,
+    Iterable<T>
 {
   /**
    * Construct a Map3D object with an arbitrarily chosen compartment size of 1.5
@@ -91,9 +91,9 @@ public class Map3D
    */
   public synchronized void clear()
   {
-    for( final List<Location3D> itemList : compartments.values() )
+    for( final List<T> itemList : compartments.values() )
       {
-	for( final Location3D item : itemList )
+	for( final T item : itemList )
 	  {
 	    item.removeMovementListener( this );
 	  }
@@ -131,12 +131,12 @@ public class Map3D
    *          The item to add. This value must not be null.
    * @see #remove(Location3D)
    */
-  public synchronized void store( final Location3D item )
+  public synchronized void store( final T item )
   {
     final String key = makeKey( item.getX(),
 	                        item.getY(),
 	                        item.getZ() );
-    List<Location3D> itemList = compartments.get( key );
+    List<T> itemList = compartments.get( key );
     if( itemList == null )
       {
 	itemList = new ArrayList<>();
@@ -160,13 +160,13 @@ public class Map3D
    * @param item
    *          The item to remove. This value must not be null.
    */
-  public synchronized void remove( final Location3D item )
+  public synchronized void remove( final T item )
   {
     item.removeMovementListener( this );
     final String key = makeKey( item.getX(),
 	                        item.getY(),
 	                        item.getZ() );
-    final List<Location3D> itemList = compartments.get( key );
+    final List<T> itemList = compartments.get( key );
     if( (itemList != null) && (itemList.remove( item )) )
       {
 	// If the item is moved before we actually remove the MovementListener,
@@ -183,7 +183,7 @@ public class Map3D
   /**
    * <p>
    * Get all {@link Location3D} objects that are no farther than a certain
-   * distance from a certain reference location.
+   * distance from a reference location.
    * </p>
    * 
    * <p>
@@ -201,8 +201,8 @@ public class Map3D
    *         farther from the given reference location than the given range.
    * @see #nearestTo(double,double,double, double)
    */
-  public synchronized List<Location3D> getAllWithin( final Location3D referenceLocation3D,
-	                                             final double range )
+  public synchronized List<T> getAllWithin( final T referenceLocation3D,
+	                                    final double range )
   {
     return getAllWithin( referenceLocation3D.getX(),
 	                 referenceLocation3D.getY(),
@@ -239,12 +239,12 @@ public class Map3D
    * @see #nearestTo(Location3D, double)
    */
   @SuppressWarnings("unused")
-  public synchronized List<Location3D> getAllWithin( final double fromX,
-	                                             final double fromY,
-	                                             final double fromZ,
-	                                             final double range )
+  public synchronized List<T> getAllWithin( final double fromX,
+	                                    final double fromY,
+	                                    final double fromZ,
+	                                    final double range )
   {
-    final List<Location3D> result = new ArrayList<>();
+    final List<T> result = new ArrayList<>();
     final double absError = (compartmentSize / 2.0d);
 
     final double startX = fromX - absError;
@@ -270,7 +270,7 @@ public class Map3D
 		final String key = makeKey( x,
 		                            y,
 		                            z );
-		final List<Location3D> compartment = compartments.get( key );
+		final List<T> compartment = compartments.get( key );
 		if( compartment != null )
 		  {
 		    searchSet.add( compartment );
@@ -290,9 +290,9 @@ public class Map3D
 	x += absError;
       }
 
-    for( final List<Location3D> itemList : searchSet )
+    for( final List<T> itemList : searchSet )
       {
-	for( final Location3D item : itemList )
+	for( final T item : itemList )
 	  {
 	    final double d = item.distanceTo( fromX,
 		                              fromY,
@@ -379,7 +379,8 @@ public class Map3D
 
 
   /**
-   * Generates the hash key for a compartment.
+   * Generates the hash key for a location, which determines the compartment
+   * where it is stored.
    * 
    * @param x
    *          The x-coordinate for the Location3D to be stored.
@@ -406,9 +407,9 @@ public class Map3D
    * move Location3D elements from one compartment to another if required.
    */
   @Override
-  public synchronized void locationMoved( final MovementEvent e )
+  public synchronized void locationMoved( final MovementEvent<T> e )
   {
-    final Location3D item = e.location3D;
+    final T item = e.getLocation3D();
     final String oldKey = makeKey( e.x,
 	                           e.y,
 	                           e.z );
@@ -417,7 +418,7 @@ public class Map3D
 	                           item.getZ() );
     if( oldKey != newKey )
       {
-	List<Location3D> itemList = compartments.get( oldKey );
+	List<T> itemList = compartments.get( oldKey );
 	if( (itemList != null) && itemList.remove( item ) )
 	  {
 	    version++;
@@ -459,7 +460,7 @@ public class Map3D
    * @return An Iterator over all elements in this Map3D.
    */
   @Override
-  public Iterator<Location3D> iterator()
+  public Iterator<T> iterator()
   {
     return new Map3DIterator( this );
   }
@@ -467,9 +468,9 @@ public class Map3D
 
   private class Map3DIterator
     implements
-      Iterator<Location3D>
+      Iterator<T>
   {
-    public Map3DIterator( final Map3D map3d )
+    public Map3DIterator( final Map3D<T> map3d )
     {
       super();
       this.map3d = map3d;
@@ -487,7 +488,7 @@ public class Map3D
 
 
     @Override
-    public Location3D next()
+    public T next()
     {
       if( remaining > 0 )
 	{
@@ -519,11 +520,11 @@ public class Map3D
       System.err.println( "Map3DIterator does not support remove() operation" );
     }
 
-    private Iterator<Location3D> values;
+    private Iterator<T> values;
     private int remaining;
     //
-    private final Iterator<List<Location3D>> valueSets;
-    private final Map3D map3d;
+    private final Iterator<List<T>> valueSets;
+    private final Map3D<T> map3d;
     private final long version;
   }
 
@@ -534,8 +535,8 @@ public class Map3D
   // ever intend to run out with a 64-bit number, but why waste it?
   private transient long version = Long.MIN_VALUE;
   //
-  private final Set<List<Location3D>> searchSet = new HashSet<>();
-  private final Map<String,List<Location3D>> compartments = new HashMap<>();
+  private final Set<List<T>> searchSet = new HashSet<>();
+  private final Map<String,List<T>> compartments = new HashMap<>();
   private final double compartmentSize;
   /**
    * Set this to 'true' to dump debugging output to the console.

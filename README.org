@@ -20,21 +20,23 @@
    http://www.gnu.org/licenses/
 ** Use Cases
    The objects stored in a Map3D objects are Location3D objects. You
-   will probably want to extend that class (or even extend Point3D if
-   you want to address the Location3D in spherical coordinates!)
+   will want either to implement Location3D or extend the reference
+   implementation, Point3D.
 
    Note that Map3D does not have to operate in 3D space, it can also
    operate in 2D space: Simply ensure that the z-coordinate is always
    (and consistently) zero. Everything is then on a flat (x,y) plane.
-   You could even keep the y-coordinate at 0, and end up with a
+   You could even keep the y-coordinate at 0, too, and end up with a
    one-dimension space (a line).
 
    So, anything works that can be mapped to 1, 2, or 3 coordinates
    (not necessarily spacial ones) and for which a distance of some
-   sort can be computed consistently: Extend Location3D (or Point3D)
-   and override distanceTo(double,double,double) with your own idea of
-   distances between the (x,y,z) coordinate of the current object and
-   the given (x,y,z) coordinates.
+   sort can be computed consistently: Implement Location3D (or extend
+   Point3D). The distanceTo(double,double,double) method determines
+   your own idea of distances between different coordinates. You can
+   define this to be distance in a color space, distance as similarity
+   in images, etc. Point3D’s implementation thinks of distance in
+   Euclidean (3D) space.
 ** GitHub Repository
    The sources are at GitHub (Project: rltodfjlib):
    https://github.com/kuschuermann/rltmap3d
@@ -42,16 +44,14 @@
    The command "ant jar" should do it. If that fails, here is what you
    need to know:
 
-   The source code is essentially compatible with Java 1.5 but a minor
-   dependency on Console in the Test class (which could be fixed by
-   commenting out some parts) pushes the minimum version to Java 1.6.
-   
-   Also required (for easy rebuilding) is Apache Ant 1.7 but an
-   earlier version of Ant may also work; you could also rebuild the
+   The source code is essentially compatible with Java 1.5 but has
+   only been tested with Java 1.7 and Java 1.8. If you want to build
+   the code easily from the command line, you’ll need Ant 1.7 but it
+   may build with earlier versions of Ant. You could also rebuild the
    software using "javac -d .build src/*.java" and then use jar to
    build an appropriate jar file from a manifest file and the contents
-   of the .build/ directory. Essentially, these three commands are all
-   you really need to build it:
+   of the .build/ directory. Essentially, these commands are all you
+   really need to build it:
    
    : mkdir .build
    : jar cfe map3d.jar Test -C .build/ . \
@@ -65,45 +65,52 @@
    Map3D works by breaking up your entire space dynamically into a set
    of “compartments” whose size you define, and then searching only
    that subset which can contain elements within your specified range.
+   Think of your space consisting of a bunch of equal-sized cubes,
+   stacked in perfect alignment. Each cube is a compartment and you
+   choose how large or small the compartments are.
 
-   For example, after choosing a compartment size of 2×2×2 and
-   distributing 1 million stars randomly in a 200×200×200 unit (think
-   light year) space, we can locate all stars within 25 light years by
-   searching the contents of at most ~2200 compartments, which is less
-   than 0.03% of the total search space, or a speed improvement over a
-   strictly linear search of a factor more than 3500.
+   Performance?
+
+   After choosing a compartment size of 2×2×2 and distributing 1
+   million stars randomly into a 200×200×200 unit area, we can locate
+   all stars within 25 units by searching the contents of at most
+   ~2200 of those potentially 1 million compartments, which is only
+   about 0.2% of the total search space, or a speed improvement over a
+   linear search of more than 400. If you searched for something less
+   than 10 units from some location, you’d have to search only about
+   0.01% of the total space, for a speed improvement of 8000.
 ** Example Code
    Create a Map3D object with a compartment size of 1.5 units. Spread
    1 million Location3D objects into the Map3D using random locations
    in the range -50…+50 for each of the x,y,z coordinates:
 
-   : final Map3D<Location3D> map3d = new Map3D<>( 1.5d );
+   : final Map3D<Point3D> map3d = new Map3D<>( 1.5d );
    : for( int i = 0; i < 1_000_000; i++ )
    :   {
    :     final double x = (random.nextDouble() * 100.0d) - 50.0d;
    :     final double y = (random.nextDouble() * 100.0d) - 50.0d;
    :     final double z = (random.nextDouble() * 100.0d) - 50.0d;
-   :     final Location3D n = new Point3D().setCartesian( x,
-   :                                                      y,
-   :                                                      z );
-   :     map3d.store( n );
+   :     final Point3D loc = new Point3D().setCartesian( x,
+   :                                                     y,
+   :                                                     z );
+   :     map3d.store( loc );
    :   }
 
    Next, create a reference point from which we’ll calculate
    distances:
 
-   : final Point3D REF = new Point3D();
-   : REF.setCartesian( random.nextDouble() * 100.0d - 50.0d,
+   : final Point3D ref = new Point3D();
+   : ref.setCartesian( random.nextDouble() * 100.0d - 50.0d,
    :                   random.nextDouble() * 100.0d - 50.0d,
    :                   random.nextDouble() * 100.0d - 50.0d );
 
-   Locate all Location3D objects that are within 7.5 units from this
+   Locate all Point3D objects that are within 7.5 units from this
    reference point:
 
-   : final List<Location3D> result = map3d.getAllWithin( REF,
-   :                                                     7.5d );
+   : final List<Point3D> result = map3d.getAllWithin( ref,
+   :                                                  7.5d );
    
    You could also locate the nearest Location3D from the reference
    location, so long as it is no farther than 100 units away:
 
-   : final Location3D nearest = map3d.nearestTo( REF, 100.0d );
+   : final Point3D nearest = map3d.nearestTo( REF, 100.0d );
