@@ -522,10 +522,7 @@ public class Map3D<T extends Location3D>
 	      return values.next();
 	    }
 	}
-      else
-	{
-	  throw new NoSuchElementException();
-	}
+      throw new NoSuchElementException();
     }
 
 
