@@ -40,27 +40,6 @@
 ** GitHub Repository
    The sources are at GitHub (Project: rltodfjlib):
    https://github.com/kuschuermann/rltmap3d
-** Building from Source
-   The command "ant jar" should do it. If that fails, here is what you
-   need to know:
-
-   The source code is essentially compatible with Java 1.5 but has
-   only been tested with Java 1.7 and Java 1.8. If you want to build
-   the code easily from the command line, you’ll need Ant 1.7 but it
-   may build with earlier versions of Ant. You could also rebuild the
-   software using "javac -d .build src/*.java" and then use jar to
-   build an appropriate jar file from a manifest file and the contents
-   of the .build/ directory. Essentially, these commands are all you
-   really need to build it:
-   
-   : mkdir .build
-   : jar cfe map3d.jar Test -C .build/ . \
-   :                        -C . src/*.java \
-   :                        README.text LICENSE.TXT build.xml
-
-   The included "build.xml" script builds for Java 1.7 by default but
-   you can force compilation with Java 1.6 by using a command like
-   "ant jar6"
 ** How does it work?
    Map3D works by breaking up your entire space dynamically into a set
    of “compartments” whose size you define, and then searching only
@@ -113,4 +92,26 @@
    You could also locate the nearest Location3D from the reference
    location, so long as it is no farther than 100 units away:
 
-   : final Point3D nearest = map3d.nearestTo( REF, 100.0d );
+   : final Point3D nearest = map3d.nearestTo( ref,
+   :                                          100.0d );
+** Building from Source
+   The command "ant jar" should do it. If that fails, here is what you
+   need to know:
+
+   The source code is essentially compatible with Java 1.5 but has
+   only been tested with Java 1.7 and Java 1.8. If you want to build
+   the code easily from the command line, you’ll need Ant 1.7 but it
+   may build with earlier versions of Ant. You could also rebuild the
+   software using "javac -d .build src/*.java" and then use jar to
+   build an appropriate jar file from a manifest file and the contents
+   of the .build/ directory. Essentially, these commands are all you
+   really need to build it:
+   
+   : mkdir .build
+   : jar cfe map3d.jar Test -C .build/ . \
+   :                        -C . src/*.java \
+   :                        README.text LICENSE.TXT build.xml
+
+   The included "build.xml" script builds for Java 1.7 by default but
+   you can force compilation with Java 1.6 by using a command like
+   "ant jar6"
