@@ -1,5 +1,5 @@
 * Ringlord Technologies Map3D Java Library
-:  Copyright © 2013–2014 Ringlord Technologiesa
+:  Copyright © 2013–2014 Ringlord Technologies
 :  Copyright © 2013–2014 K. Udo Schuermann
 :  All rights reserved
 ** Introduction
