@@ -52,23 +52,23 @@ public class Point3D
    *          The z-coordinate, deemed on the vertical (positive is up)
    **/
   public Point3D setCartesian( final double x,
-	                       final double y,
-	                       final double z )
+                               final double y,
+                               final double z )
   {
     if( (x != getX()) || (y != getY()) || (z != getZ()) )
       {
-	final double oldX = this.x;
-	final double oldY = this.y;
-	final double oldZ = this.z;
+        final double oldX = this.x;
+        final double oldY = this.y;
+        final double oldZ = this.z;
 
-	this.x = x;
-	this.y = y;
-	this.z = z;
+        this.x = x;
+        this.y = y;
+        this.z = z;
 
-	fireMovementEvent( new MovementEvent<Location3D>( oldX,
-	                                                  oldY,
-	                                                  oldZ,
-	                                                  this ) );
+        fireMovementEvent( new MovementEvent<Location3D>( oldX,
+                                                          oldY,
+                                                          oldZ,
+                                                          this ) );
       }
     return this;
   }
@@ -87,7 +87,7 @@ public class Point3D
   {
     if( (result == null) || (result.length != 3) )
       {
-	result = new double[3];
+        result = new double[3];
       }
     result[0] = x;
     result[1] = y;
@@ -129,13 +129,13 @@ public class Point3D
    *          The radius/distance from the center in arbitrary distance units.
    **/
   public Point3D setSpherical( final double phi,
-	                       final double theta,
-	                       final double rho )
+                               final double theta,
+                               final double rho )
   {
     final double rVect = rho * Math.cos( theta );
     setCartesian( rVect * Math.cos( phi ),
-	          rVect * Math.sin( phi ),
-	          rho * Math.sin( theta ) );
+                  rVect * Math.sin( phi ),
+                  rho * Math.sin( theta ) );
     return this;
   }
 
@@ -156,7 +156,7 @@ public class Point3D
   {
     if( (result == null) || (result.length != 3) )
       {
-	result = new double[3];
+        result = new double[3];
       }
     result[0] = getPhi();
     result[1] = getTheta();
@@ -176,7 +176,7 @@ public class Point3D
   public double getPhi()
   {
     return Math.atan2( getY(),
-	               getX() );
+                       getX() );
   }
 
 
@@ -195,7 +195,7 @@ public class Point3D
     // Test for special case, which would otherwise result in NaN
     if( (x == 0) && (y == 0) )
       {
-	return 0.0d;
+        return 0.0d;
       }
     return Math.atan( z / Math.sqrt( (x * x) + (y * y) ) );
   }
@@ -220,8 +220,8 @@ public class Point3D
   public final double distanceTo( final Location3D location )
   {
     return distanceTo( location.getX(),
-	               location.getY(),
-	               location.getZ() );
+                       location.getY(),
+                       location.getZ() );
   }
 
 
@@ -240,8 +240,8 @@ public class Point3D
    */
   @Override
   public double distanceTo( final double x,
-	                    final double y,
-	                    final double z )
+                            final double y,
+                            final double z )
   {
     final double dx = (getX() - x);
     final double dy = (getY() - y);
@@ -260,7 +260,7 @@ public class Point3D
    * @return The distance between the two locations in 3D space.
    */
   public static final double distance( final Location3D loc1,
-	                               final Location3D loc2 )
+                                       final Location3D loc2 )
   {
     return loc1.distanceTo( loc2 );
   }
@@ -270,9 +270,9 @@ public class Point3D
   public String toString()
   {
     return String.format( "<%1.4f,%1.4f,%1.4f>",
-	                  x,
-	                  y,
-	                  z );
+                          x,
+                          y,
+                          z );
   }
 
 
@@ -282,7 +282,7 @@ public class Point3D
   {
     if( movementListeners == null )
       {
-	movementListeners = new HashSet<>();
+        movementListeners = new HashSet<>();
       }
     movementListeners.add( (MovementListener<Location3D>)l );
   }
@@ -293,10 +293,10 @@ public class Point3D
   {
     if( movementListeners != null )
       {
-	if( movementListeners.remove( l ) && movementListeners.isEmpty() )
-	  {
-	    movementListeners = null;
-	  }
+        if( movementListeners.remove( l ) && movementListeners.isEmpty() )
+          {
+            movementListeners = null;
+          }
       }
   }
 
@@ -309,10 +309,10 @@ public class Point3D
   {
     if( movementListeners != null )
       {
-	for( final MovementListener<Location3D> l : movementListeners )
-	  {
-	    l.locationMoved( e );
-	  }
+        for( final MovementListener<Location3D> l : movementListeners )
+          {
+            l.locationMoved( e );
+          }
       }
   }
   private double x, y, z;

@@ -67,8 +67,8 @@ public interface Location3D
 
 
   public double distanceTo( final double x,
-	                    final double y,
-	                    final double z );
+                            final double y,
+                            final double z );
 
 
   /**
@@ -108,9 +108,9 @@ public interface Location3D
 
 
     public MovementEvent( final double x,
-	                  final double y,
-	                  final double z,
-	                  final T location3D )
+                          final double y,
+                          final double z,
+                          final T location3D )
     {
       super( location3D );
       this.location3D = location3D;

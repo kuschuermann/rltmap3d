@@ -39,14 +39,14 @@ import com.ringlord.map.Location3D.MovementListener;
  * and consume no storage, some may store a few objects, and others may store a
  * large number. A search within any given compartment is linear.
  * </p>
- * 
+ *
  * <p>
  * The size of each compartment is defined at the time of construction. Moving a
  * {@link Location3D} object causes its location with the compartment map to be
  * adjusted as necessary (Map3D registers itself as a {@link MovementListener}
  * on each stored Location3D).
  * </p>
- * 
+ *
  * <p>
  * Example: One million objects distributed randomly in 200×200×200 unit space
  * (each item's coordinates randomly generated in the range [-200..+200]), using
@@ -57,7 +57,7 @@ import com.ringlord.map.Location3D.MovementListener;
  * searched, but that is still hundreds of times faster than a full space
  * search.
  * </p>
- * 
+ *
  * <p>
  * For optimum performance vs. storage space, it is suggested to experiment, as
  * no single compartment size can address every need: The smaller the size of
@@ -67,7 +67,7 @@ import com.ringlord.map.Location3D.MovementListener;
  * large compartment size in relation to the total mapped space can save some
  * space, but may result in increased time spent on (linear) searches.
  * </p>
- * 
+ *
  * @author K Udo Schuermann
  */
 public class Map3D<T extends Location3D>
@@ -77,7 +77,7 @@ public class Map3D<T extends Location3D>
 {
   /**
    * Construct a Map3D object with an arbitrarily chosen compartment size of 1.5
-   * 
+   *
    * @see #Map3D(double)
    */
   public Map3D()
@@ -88,7 +88,7 @@ public class Map3D<T extends Location3D>
 
   /**
    * Construct a Map3D object with a chosen compartment size.
-   * 
+   *
    * @param compartmentSize
    *          The desired compartment size; for a discussion on the meaning of
    *          this value, please see the {@linkplain Map3D class-level
@@ -108,11 +108,11 @@ public class Map3D<T extends Location3D>
   {
     for( final List<T> itemList : compartments.values() )
       {
-	for( final T item : itemList )
-	  {
-	    item.removeMovementListener( this );
-	  }
-	itemList.clear();
+        for( final T item : itemList )
+          {
+            item.removeMovementListener( this );
+          }
+        itemList.clear();
       }
     compartments.clear();
     size = 0;
@@ -122,7 +122,7 @@ public class Map3D<T extends Location3D>
 
   /**
    * How many {@link Location3D} elements are in the map.
-   * 
+   *
    * @return The number of elements, a number 0 or greater.
    */
   public int size()
@@ -141,7 +141,7 @@ public class Map3D<T extends Location3D>
    * Add a {@link Location3D}. This causes the Map3D to add itself as a
    * {@link MovementListener} to the Location3D, allowing the Location3D to be
    * moved safely. It is safe (but pointless) to add an item multiple times.
-   * 
+   *
    * @param item
    *          The item to add. This value must not be null.
    * @see #remove(Location3D)
@@ -149,20 +149,20 @@ public class Map3D<T extends Location3D>
   public synchronized void store( final T item )
   {
     final String key = makeKey( item.getX(),
-	                        item.getY(),
-	                        item.getZ() );
+                                item.getY(),
+                                item.getZ() );
     List<T> itemList = compartments.get( key );
     if( itemList == null )
       {
-	itemList = new ArrayList<>();
-	compartments.put( key,
-	                  itemList );
+        itemList = new ArrayList<>();
+        compartments.put( key,
+                          itemList );
       }
     if( itemList.add( item ) )
       {
-	item.addMovementListener( this );
-	size++;
-	version++;
+        item.addMovementListener( this );
+        size++;
+        version++;
       }
   }
 
@@ -171,7 +171,7 @@ public class Map3D<T extends Location3D>
    * Remove a {@link Location3D}. This causes the Map3D to remove itself from
    * the Location3D. It is safe (but pointless) try to remove an item that is
    * not currently stored.
-   * 
+   *
    * @param item
    *          The item to remove. This value must not be null.
    */
@@ -179,18 +179,18 @@ public class Map3D<T extends Location3D>
   {
     item.removeMovementListener( this );
     final String key = makeKey( item.getX(),
-	                        item.getY(),
-	                        item.getZ() );
+                                item.getY(),
+                                item.getZ() );
     final List<T> itemList = compartments.get( key );
     if( (itemList != null) && (itemList.remove( item )) )
       {
-	// If the item is moved before we actually remove the MovementListener,
-	// then our listener implementation will not find the item in the list
-	// anymore. This is an unfortunate, but extremely rare situation, which
-	// we accept in order to avoid an extra 'contains' method call.
-	item.removeMovementListener( this );
-	size--;
-	version++;
+        // If the item is moved before we actually remove the MovementListener,
+        // then our listener implementation will not find the item in the list
+        // anymore. This is an unfortunate, but extremely rare situation, which
+        // we accept in order to avoid an extra 'contains' method call.
+        item.removeMovementListener( this );
+        size--;
+        version++;
       }
   }
 
@@ -200,13 +200,13 @@ public class Map3D<T extends Location3D>
    * Get all {@link Location3D} objects that are no farther than a certain
    * distance from a reference location.
    * </p>
-   * 
+   *
    * <p>
    * NOTE: To retrieve a significant subset of elements from the map, it is far
    * more resource efficient to use {@link #iterator()} than a large 'range'
    * value with this method.
    * </p>
-   * 
+   *
    * @param referenceLocation3D
    *          The reference location from which the distance of all desired
    *          elements will be computed.
@@ -217,12 +217,12 @@ public class Map3D<T extends Location3D>
    * @see #nearestTo(double,double,double, double)
    */
   public synchronized List<T> getAllWithin( final T referenceLocation3D,
-	                                    final double range )
+                                            final double range )
   {
     return getAllWithin( referenceLocation3D.getX(),
-	                 referenceLocation3D.getY(),
-	                 referenceLocation3D.getZ(),
-	                 range );
+                         referenceLocation3D.getY(),
+                         referenceLocation3D.getZ(),
+                         range );
   }
 
 
@@ -231,13 +231,13 @@ public class Map3D<T extends Location3D>
    * Get all {@link Location3D} objects that are no farther than a certain
    * distance from a certain reference location.
    * </p>
-   * 
+   *
    * <p>
    * NOTE: To retrieve a significant subset of elements from the map, it is far
    * more resource efficient to use {@link #iterator()} than a large 'range'
    * value with this method.
    * </p>
-   * 
+   *
    * @param fromX
    *          x-coordinate of the reference location from which the distance of
    *          all desired elements will be computed.
@@ -255,9 +255,9 @@ public class Map3D<T extends Location3D>
    */
   @SuppressWarnings("unused")
   public synchronized List<T> getAllWithin( final double fromX,
-	                                    final double fromY,
-	                                    final double fromZ,
-	                                    final double range )
+                                            final double fromY,
+                                            final double fromZ,
+                                            final double range )
   {
     final List<T> result = new ArrayList<>();
     final double absError = (compartmentSize / 2.0d);
@@ -276,47 +276,47 @@ public class Map3D<T extends Location3D>
     double x = startX;
     while( x <= endX )
       {
-	double y = startY;
-	while( y <= endY )
-	  {
-	    double z = startZ;
-	    while( z <= endZ )
-	      {
-		final String key = makeKey( x,
-		                            y,
-		                            z );
-		final List<T> compartment = compartments.get( key );
-		if( compartment != null )
-		  {
-		    searchSet.add( compartment );
-		    if( TRACEABLE && trace )
-		      {
-			System.out.println( "{" + x + "," + y + "," + z + "} => Compartment " + key + ": POPULATED" );
-		      }
-		  }
-		else if( TRACEABLE && trace )
-		  {
-		    System.out.println( "{" + x + "," + y + "," + z + "} => Compartment " + key + ": EMPTY" );
-		  }
-		z += absError;
-	      }
-	    y += absError;
-	  }
-	x += absError;
+        double y = startY;
+        while( y <= endY )
+          {
+            double z = startZ;
+            while( z <= endZ )
+              {
+                final String key = makeKey( x,
+                                            y,
+                                            z );
+                final List<T> compartment = compartments.get( key );
+                if( compartment != null )
+                  {
+                    searchSet.add( compartment );
+                    if( TRACEABLE && trace )
+                      {
+                        System.out.println( "{" + x + "," + y + "," + z + "} => Compartment " + key + ": POPULATED" );
+                      }
+                  }
+                else if( TRACEABLE && trace )
+                  {
+                    System.out.println( "{" + x + "," + y + "," + z + "} => Compartment " + key + ": EMPTY" );
+                  }
+                z += absError;
+              }
+            y += absError;
+          }
+        x += absError;
       }
 
     for( final List<T> itemList : searchSet )
       {
-	for( final T item : itemList )
-	  {
-	    final double d = item.distanceTo( fromX,
-		                              fromY,
-		                              fromZ );
-	    if( d <= range )
-	      {
-		result.add( item );
-	      }
-	  }
+        for( final T item : itemList )
+          {
+            final double d = item.distanceTo( fromX,
+                                              fromY,
+                                              fromZ );
+            if( d <= range )
+              {
+                result.add( item );
+              }
+          }
       }
 
     return result;
@@ -326,7 +326,7 @@ public class Map3D<T extends Location3D>
   /**
    * Get the nearest object in 3D space to the given reference location, but no
    * farther than the given range.
-   * 
+   *
    * @param referenceLocation3D
    *          The reference location from which the distance to the nearest
    *          element is computed.
@@ -338,19 +338,19 @@ public class Map3D<T extends Location3D>
    * @see #getAllWithin(double, double, double, double)
    */
   public synchronized T nearestTo( final Location3D referenceLocation3D,
-	                           final double range )
+                                   final double range )
   {
     return nearestTo( referenceLocation3D.getX(),
-	              referenceLocation3D.getY(),
-	              referenceLocation3D.getZ(),
-	              range );
+                      referenceLocation3D.getY(),
+                      referenceLocation3D.getZ(),
+                      range );
   }
 
 
   /**
    * Get the nearest object in 3D space to the given reference location, but no
    * farther than the given range.
-   * 
+   *
    * @param fromX
    *          The x-coordinate of the reference location from which the distance
    *          to the nearest element is computed.
@@ -368,26 +368,26 @@ public class Map3D<T extends Location3D>
    * @see #getAllWithin(Location3D, double)
    */
   public synchronized T nearestTo( final double fromX,
-	                           final double fromY,
-	                           final double fromZ,
-	                           final double range )
+                                   final double fromY,
+                                   final double fromZ,
+                                   final double range )
   {
     T nearestItem = null;
     double distance = Double.MAX_VALUE;
 
     for( final T item : getAllWithin( fromX,
-	                              fromY,
-	                              fromZ,
-	                              range ) )
+                                      fromY,
+                                      fromZ,
+                                      range ) )
       {
-	final double d = item.distanceTo( fromX,
-	                                  fromY,
-	                                  fromZ );
-	if( d < distance )
-	  {
-	    distance = d;
-	    nearestItem = item;
-	  }
+        final double d = item.distanceTo( fromX,
+                                          fromY,
+                                          fromZ );
+        if( d < distance )
+          {
+            distance = d;
+            nearestItem = item;
+          }
       }
     return nearestItem;
   }
@@ -396,7 +396,7 @@ public class Map3D<T extends Location3D>
   /**
    * Generates the hash key for a location, which determines the compartment
    * where it is stored.
-   * 
+   *
    * @param x
    *          The x-coordinate for the Location3D to be stored.
    * @param y
@@ -406,8 +406,8 @@ public class Map3D<T extends Location3D>
    * @return A hash key that identifies the compartment uniquely.
    */
   private String makeKey( final double x,
-	                  final double y,
-	                  final double z )
+                          final double y,
+                          final double z )
   {
     final int cx = (int)(x / compartmentSize);
     final int cy = (int)(y / compartmentSize);
@@ -426,36 +426,36 @@ public class Map3D<T extends Location3D>
   {
     final T item = e.getLocation3D();
     final String oldKey = makeKey( e.x,
-	                           e.y,
-	                           e.z );
+                                   e.y,
+                                   e.z );
     final String newKey = makeKey( item.getX(),
-	                           item.getY(),
-	                           item.getZ() );
-    if( oldKey != newKey )
+                                   item.getY(),
+                                   item.getZ() );
+    if( !oldKey.equals( newKey ) )
       {
-	List<T> itemList = compartments.get( oldKey );
-	if( (itemList != null) && itemList.remove( item ) )
-	  {
-	    version++;
-	    // This is MOST of what add(Location3D) does, but in the interest of
-	    // performance we are skipping the things that add() does but
-	    // don't need doing here.
-	    itemList = compartments.get( newKey );
-	    if( itemList == null )
-	      {
-		itemList = new ArrayList<>();
-		compartments.put( newKey,
-		                  itemList );
-	      }
-	    itemList.add( item );
-	    version++;
-	  }
-	else
-	  {
-	    // We can get here in the rare (very rare) situation where the
-	    // Location3D is removed from the list JUST BEFORE the listener
-	    // is removed, too (see 'remove' method).
-	  }
+        List<T> itemList = compartments.get( oldKey );
+        if( (itemList != null) && itemList.remove( item ) )
+          {
+            version++;
+            // This is MOST of what add(Location3D) does, but in the interest of
+            // performance we are skipping the things that add() does but
+            // don't need doing here.
+            itemList = compartments.get( newKey );
+            if( itemList == null )
+              {
+                itemList = new ArrayList<>();
+                compartments.put( newKey,
+                                  itemList );
+              }
+            itemList.add( item );
+            version++;
+          }
+        else
+          {
+            // We can get here in the rare (very rare) situation where the
+            // Location3D is removed from the list JUST BEFORE the listener
+            // is removed, too (see 'remove' method).
+          }
       }
   }
 
@@ -466,12 +466,12 @@ public class Map3D<T extends Location3D>
    * order of the elements depends on a variety of internal structures and is
    * not predictable.
    * </p>
-   * 
+   *
    * <p>
    * Note that the Map3D must not be modified, otherwise the next call to
    * {@link #next()} will throw a {@link ConcurrentModificationException()}.
    * </p>
-   * 
+   *
    * @return An Iterator over all elements in this Map3D.
    */
   @Override
@@ -506,22 +506,22 @@ public class Map3D<T extends Location3D>
     public T next()
     {
       if( remaining > 0 )
-	{
-	  synchronized( map3d )
-	    {
-	      if( version != map3d.version )
-		{
-		  throw new ConcurrentModificationException( "Must not modify Map3D while iterating over its elements!" );
-		}
+        {
+          synchronized( map3d )
+            {
+              if( version != map3d.version )
+                {
+                  throw new ConcurrentModificationException( "Must not modify Map3D while iterating over its elements!" );
+                }
 
-	      if( (values == null) || !values.hasNext() )
-		{
-		  values = valueSets.next().iterator();
-		}
-	      --remaining;
-	      return values.next();
-	    }
-	}
+              if( (values == null) || !values.hasNext() )
+                {
+                  values = valueSets.next().iterator();
+                }
+              --remaining;
+              return values.next();
+            }
+        }
       throw new NoSuchElementException();
     }
 
